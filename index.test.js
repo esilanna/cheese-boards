@@ -33,4 +33,25 @@ describe("User, Board, and Cheese Models", () => {
     expect(cheese1).toBeDefined();
     expect(cheese1.title).toBe("Old Amsterdam");
     })
+
+    //TESTING IF A USER CAN HAVE MANY BOARDS
+    test ("testing 1-M User to Boards", async () => {
+        await sequelize.sync({ force: true});
+        let user1 = await User.create({
+            name: "user 1",
+            email: "user@gmail.com"})
+        let board1 = await Board.create({
+            type: "Budget Cheeses",
+            description: "Don't break the bank for quality cheese",
+            rating: 8})
+        let board2 = await Board.create({
+            type: "Fancy Cheeses",
+            description: "Taste the luxury",
+            rating: 10
+        })
+        await user1.addBoards([board1, board2]);
+        const user1Boards = await user1.getBoards();
+        expect(user1Boards.length).toBe(2);
+        expect(user1Boards[0] instanceof Board).toBeTruthy;
+    })
 })
