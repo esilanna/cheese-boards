@@ -90,5 +90,37 @@ describe("User, Board, and Cheese Models", () => {
         expect (cheese2Boards.length).toBe(1);
     })
 
-    
+    test("Testing for eager loading", async ()  => {
+        await sequelize.sync({ force: true });
+
+        await User.bulkCreate([
+            {name: "user1", email: "user1@email"},
+            {name: "user2", email: "user2@email"}])
+        await Board.bulkCreate([
+            {type: "Board 1 Cheese",
+            description: "lorem ipsum",
+            rating: 6},
+            {type: "Board 2 Cheese",
+            description: "lorem ipsum",
+            rating: 8}])
+        await Cheese.bulkCreate([
+            {title:"Hard Cheese 1",
+            description:"This is a hard cheese"},
+            {title:"Hard Cheese 2",
+            description:"This is another hard cheese"}
+        ])
+
+        let board1 = await Board.findByPk(1);
+        let cheese1 = await Cheese.findByPk(1);
+        let cheese2 = await Cheese.findByPk(2);
+        await board1.addCheeses([cheese1, cheese2]);
+
+        const wholeBoardWithCheese = await Board.findAll({
+            include: [{
+                model: Cheese, as: 'cheeses'
+            }]
+        })
+        expect(wholeBoardWithCheese[0].cheeses.length).toBe(2);
+        expect(wholeBoardWithCheese[1].cheeses.length).toBe(0);
+    })
 })
