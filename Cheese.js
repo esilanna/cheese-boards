@@ -1,9 +1,4 @@
-/*
-- `title` string
-- `description` string
-*/
-
-const {sequelize} = require('../db');
+const {sequelize} = require('./db');
 const { Sequelize } = require('sequelize');
 
 const Cheese = sequelize.define('cheese', {
